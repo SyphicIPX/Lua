@@ -1,0 +1,89 @@
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local flySpeed = 50 -- Initial fly speed
+local flyDirection = Vector3.new 0, 0)
+local isFlying = false
+
+local FlyScript = ReplicatedStorage:FindFirstChild("FlyScript", true)
+if not FlyScript then
+    FlyScript = Instance.new("Script")
+    FlyScript.Name = "FlyScript"
+    FlyScript.Parent = ReplicatedStorage
+end
+
+local FlyScriptFunction = function()
+    if isFlying then
+        local direction = Vector3.new(0, 0, 0)
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            direction = direction + Vector3.new(0, 1, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            direction = direction + Vector3.new(0, -1, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            direction = direction + Vector3.new(-1, 0, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            direction = direction + Vector3.new(1, 0, 0)
+        end
+
+        if direction ~= Vector3.new(0, 0, 0) then
+            flyDirection = flyDirection + direction * flySpeed * Time.deltaTime
+        end
+
+        LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame + flyDirection
+    end
+end
+
+local FlyGui = ReplicatedStorage:FindFirstChild("FlyGui", true)
+if not FlyGui then
+    FlyGui = Instance.new("TextButton")
+    FlyGui.Name = "FlyGui"
+    FlyGui.Text = "Fly Speed: " .. flySpeed
+    FlyGui.Size = UDim2.new(0, 100, 0, 20)
+    FlyGui.Position = UDim2.new(0.5, -50, 0.5, -10)
+    FlyGui.BackgroundColor3 = Color3.new(0, 0, 0)
+    FlyGui.TextColor3 = Color3.new(1, 1, 1)
+    FlyGui.Font = Enum.Font.Arial
+    FlyGui.TextSize = 14
+    FlyGui.TextXAlignment = Enum.TextXAlignment.Center
+    FlyGui.TextYAlignment = Enum.TextYAlignment.Center
+    FlyGui.Parent = LocalPlayer.PlayerGui
+end
+
+local FlyGuiFunction = function()
+    if isFlying then
+        flySpeed = tonumber(FlyGui.Text:sub(14))
+        FlyGui.Text = "Fly Speed: " .. flySpeed
+    end
+end
+
+local FlyGuiInputBegan = function(input)
+    if isFlying then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            flySpeed = flySpeed + 10
+            FlyGui.Text = "Fly Speed: " .. flySpeed
+        elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+            flySpeed = flySpeed - 10
+            FlyGui.Text = "Fly Speed: " .. flySpeed
+        end
+    end
+end
+
+local FlyGuiInputEnded = function(input)
+    if isFlying then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 then
+            flySpeed = tonumber(FlyGui.Text:sub(14))
+        end
+    end
+end
+
+local FlyGuiInputChanged = function(input)
+    if isFlying then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 then
+            fly
